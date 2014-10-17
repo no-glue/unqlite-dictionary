@@ -77,6 +77,9 @@ int main() {
 
   cout<<"exists "<<key<<" "<<table->exists(key)<<endl;
   cout<<"exists "<<anotherkey<<" "<<table->exists(anotherkey)<<endl;
+
+  cout<<"insert unique "<<anotherkey<<" "<<table->insert_unique(anotherkey, "a")<<endl;
+  cout<<"insert unique "<<anotherkey<<" "<<table->insert_unique(anotherkey, "b")<<endl;
   delete table;
   delete result;
   delete tokenizer;
