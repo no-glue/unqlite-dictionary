@@ -46,6 +46,7 @@ int main() {
     Tokenizer
   >(wrapper, tokenizer);
   string key("a");
+  string anotherkey("b");
   table->insert(key, "a");
   table->insert(key, "b");
   table->insert(key, "c");
@@ -73,6 +74,9 @@ int main() {
     cout<<"from list "<<list->get_head()->value<<endl;
     list->pop_left();
   }
+
+  cout<<"exists "<<key<<" "<<table->exists(key)<<endl;
+  cout<<"exists "<<anotherkey<<" "<<table->exists(anotherkey)<<endl;
   delete table;
   delete result;
   delete tokenizer;
