@@ -20,18 +20,44 @@ int main() {
   int result_size;
   char tok[SAMPLE_SIZE];
   Tokenizer * tokenizer = new Tokenizer();
-  table->insert("a", "a");
-  table->insert("a", "b");
-  table->insert("a", "c");
-  table->insert("a", "dd");
-  table->insert("a", "ee");
+  DoubleList<
+    DoubleNode<string>,
+    string
+  > * list = new DoubleList<
+    DoubleNode<string>,
+    string
+  >();
+  CstringWrapper * wrapper = new CstringWrapper();
+  TokenizerList<
+    string,
+    CstringWrapper,
+    DoubleList<
+      DoubleNode<string>,
+      string
+    >,
+    Tokenizer
+  > * tokenizer_list = new TokenizerList<
+    string,
+    CstringWrapper,
+    DoubleList<
+      DoubleNode<string>,
+      string
+    >,
+    Tokenizer
+  >(wrapper, tokenizer);
+  string key("a");
+  table->insert(key, "a");
+  table->insert(key, "b");
+  table->insert(key, "c");
+  table->insert(key, "dd");
+  table->insert(key, "ee");
 
-  result_size = table->value_size("a");
+  result_size = table->value_size(key);
   
   result = new char[result_size];
-  table->find("a", result);
+  table->find(key, result);
   cout<<"result size: "<<result_size<<endl;
-  cout<<"a "<<result<<endl;
+  cout<<key<<" "<<result<<endl;
 
   tokenizer->set_buffer(result, result_size);
   while(tokenizer->token(tok)) {
@@ -41,7 +67,16 @@ int main() {
   cout<<"token "<<tok<<endl;
   memset(tok, '\0', SAMPLE_SIZE);
 
+  tokenizer->rewind();
+  tokenizer_list->tokens(key, list);
+  while(list->get_head()) {
+    cout<<"from list "<<list->get_head()->value<<endl;
+    list->pop_left();
+  }
   delete table;
   delete result;
   delete tokenizer;
+  delete list;
+  delete wrapper;
+  delete tokenizer_list;
 };
