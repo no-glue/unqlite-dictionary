@@ -31,6 +31,8 @@ int main() {
     cout<<"token "<<tok<<endl;
     memset(tok, '\0', TOK_SIZE);
   }
+  cout<<"token "<<tok<<endl;
+  memset(tok, '\0', TOK_SIZE);
   delete table;
   delete result;
   delete tokenizer;
