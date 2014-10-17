@@ -19,7 +19,10 @@ private:
   void insert(Type key, Type value, unqlite * & db) {unqlite_kv_append(db, key.c_str(), -1, (value + "|").c_str(), (value + "|").length());}
   bool insert_unique(Type key, Type value, unqlite * & db) {
     // insert unique key
-    return true;
+    bool there = exists(key, value);
+    if(there) return !there;
+    insert(key, value, db);
+    return !there;
   }
   bool exists(Type key, unqlite * & db) {
     // check if key exists
