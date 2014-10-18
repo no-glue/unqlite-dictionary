@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <cstring>
+#include <time.h>
 #include "unqlite_wrapper.h"
 #include "tokenizer.h"
 #include "cstring_wrapper.h"
@@ -251,6 +252,23 @@ int main() {
     // adapter for index (table here)
   >(adapter);
   // get metrics
+  time_t now = time(NULL), then;
+  importer->import(files, table, file_read);
+  then = time(NULL);
+  cout<<"indexing time "<<difftime(then, now)<<" seconds"<<endl;
+  metrics->collect_nodes();
+  metrics->collect_edges();
+  metrics->collect_density();
+  metrics->collect_average_degree();
+  while(results->get_head()) {
+    cout<<results->get_head()->key<<" "<<results->get_head()->value<<endl;
+    results->pop_left();
+  }
+  now = time(NULL);
+  metrics->breadth_first_search();
+  then = time(NULL);
+  cout<<results->get_head()->key<<" "<<results->get_head()->value<<endl;
+  cout<<"bfs time "<<difftime(then, now)<<" seconds"<<endl;
   delete results;
   delete tokenizer;
   delete tokenizer_visited;
