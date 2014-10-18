@@ -21,8 +21,7 @@ private:
   bool insert_unique(Type key, Type value, unqlite * & db) {
     // insert unique key
     bool there = exists(key);
-    if(there) return !there;
-    insert(key, value, db);
+    if(!there) insert(key, value, db);
     return !there;
   }
   bool exists(Type key, unqlite * & db) {

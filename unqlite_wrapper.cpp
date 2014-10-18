@@ -80,6 +80,9 @@ int main() {
 
   cout<<"insert unique "<<anotherkey<<" "<<table->insert_unique(anotherkey, "a")<<endl;
   cout<<"insert unique "<<anotherkey<<" "<<table->insert_unique(anotherkey, "b")<<endl;
+
+  table->remove(anotherkey);
+  cout<<"exists "<<anotherkey<<" "<<table->exists(anotherkey)<<endl;
   delete table;
   delete result;
   delete tokenizer;
