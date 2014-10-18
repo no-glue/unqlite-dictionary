@@ -91,13 +91,15 @@ int main() {
     cout<<results->get_head()->key<<" "<<results->get_head()->value<<endl;
     results->pop_left();
   }
-  table->insert_unique("c", "a");
-  table->insert_unique("c", "b");
+  cout<<"insert unique "<<table->insert_unique("c", "a")<<endl;
+  cout<<"insert unique "<<table->insert_unique("c", "b")<<endl;
   table->find("c", results);
   while(results->get_head()) {
     cout<<results->get_head()->key<<" "<<results->get_head()->value<<endl;
     results->pop_left();
   }
+  cout<<"exists "<<table->exists("c")<<endl;
+  table->remove("c");
   cout<<"exists "<<table->exists("c")<<endl;
   delete results;
   delete tokenizer;
