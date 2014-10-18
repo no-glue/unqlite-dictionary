@@ -14,6 +14,8 @@
 using namespace std;
 
 int main() {
+  string line;
+  getline(cin, line);
   DoubleList<DoubleNode<string>, string> * results = new DoubleList<DoubleNode<string>, string>();
   Tokenizer * tokenizer = new Tokenizer(), * tokenizer_visited = new Tokenizer();
   // tokenizer
@@ -29,9 +31,15 @@ int main() {
     CstringWrapper,
     DoubleList<DoubleNode<string>, string>,
     Tokenizer
-  >(str, tokenizer);
+  >(str, tokenizer),
+  * tokenizer_list_visited = new TokenizerList<
+    string,
+    CstringWrapper,
+    DoubleList<DoubleNode<string>, string>,
+    Tokenizer
+  >(str_visited, tokenizer_visited);
   // tokenizer to work with list or something else
-  UnqliteWrapper<string> * table_base = new UnqliteWrapper<string>();
+  UnqliteWrapper<string> * table_base = new UnqliteWrapper<string>(), * table_base_visited = new UnqliteWrapper<string>();
   // table for storing things
   HelperWrapper<
     string,
@@ -55,7 +63,19 @@ int main() {
       Tokenizer
     >,
     UnqliteWrapper<string>
-  >(tokenizer, tokenizer_list, table_base);
+  >(tokenizer, tokenizer_list, table_base),
+  * table_visited = new HelperWrapper<
+    string,
+    DoubleList<DoubleNode<string>, string>,
+    Tokenizer,
+    TokenizerList<
+      string,
+      CstringWrapper,
+      DoubleList<DoubleNode<string>, string>,
+      Tokenizer
+    >,
+    UnqliteWrapper<string>
+  >(tokenizer_visited, tokenizer_list_visited, table_base_visited);
   // table store
   delete results;
   delete tokenizer;
@@ -63,7 +83,10 @@ int main() {
   delete str;
   delete str_visited;
   delete tokenizer_list;
+  delete tokenizer_list_visited;
   delete table_base;
+  delete table_base_visited;
   delete table;
+  delete table_visited;
   return 0;
 }
