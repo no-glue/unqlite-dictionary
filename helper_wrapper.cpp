@@ -14,11 +14,11 @@
 using namespace std;
 
 int main() {
-  DoubleList<DoubleNode<string>, string> * list = new DoubleList<DoubleNode<string>, string>();
+  DoubleList<DoubleNode<string>, string> * results = new DoubleList<DoubleNode<string>, string>();
   Tokenizer * tokenizer = new Tokenizer();
   // tokenizer
-  CstringWrapper * wrapper = new CstringWrapper();
-  // wrapper for c strings
+  CstringWrapper * str = new CstringWrapper();
+  // str for c strings
   TokenizerList<
     string,
     CstringWrapper,
@@ -29,9 +29,9 @@ int main() {
     CstringWrapper,
     DoubleList<DoubleNode<string>, string>,
     Tokenizer
-  >(wrapper, tokenizer);
+  >(str, tokenizer);
   // tokenizer to work with list or something else
-  UnqliteWrapper<string> * table = new UnqliteWrapper<string>();
+  UnqliteWrapper<string> * table_base = new UnqliteWrapper<string>();
   // table for storing things
   HelperWrapper<
     string,
@@ -44,7 +44,7 @@ int main() {
       Tokenizer
     >,
     UnqliteWrapper<string>
-  > * mem = new HelperWrapper<
+  > * table = new HelperWrapper<
     string,
     DoubleList<DoubleNode<string>, string>,
     Tokenizer,
@@ -55,23 +55,23 @@ int main() {
       Tokenizer
     >,
     UnqliteWrapper<string>
-  >(tokenizer, tokenizer_list, table);
-  // memory store
-  mem->insert("a", "a");
-  mem->insert("a", "b");
-  mem->insert("a", "c");
-  mem->insert("a", "dd");
-  mem->insert("a", "ee");
-  mem->find("a", list);
-  while(list->get_head()) {
-    cout<<list->get_head()->key<<" "<<list->get_head()->value<<endl;
-    list->pop_left();
+  >(tokenizer, tokenizer_list, table_base);
+  // table store
+  table->insert("a", "a");
+  table->insert("a", "b");
+  table->insert("a", "c");
+  table->insert("a", "dd");
+  table->insert("a", "ee");
+  table->find("a", results);
+  while(results->get_head()) {
+    cout<<results->get_head()->key<<" "<<results->get_head()->value<<endl;
+    results->pop_left();
   }
-  delete list;
+  delete results;
   delete tokenizer;
-  delete wrapper;
+  delete str;
   delete tokenizer_list;
+  delete table_base;
   delete table;
-  delete mem;
   return 0;
 }
