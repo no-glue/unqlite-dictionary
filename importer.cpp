@@ -1,3 +1,5 @@
+#define SIZE 4294967295
+
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -5,12 +7,15 @@
 #include <stdio.h>
 #include <cstring>
 #include <time.h>
+#include <math.h>
 #include "unqlite_wrapper.h"
 #include "tokenizer.h"
 #include "cstring_wrapper.h"
 #include "double_node.h"
 #include "double_list.h"
+#include "hash_djb2_string.h"
 #include "double_list_walk.h"
+#include "chained_hash_table.h"
 #include "tokenizer_list.h"
 #include "helper_wrapper.h"
 #include "decorator_file_read.h"
@@ -25,9 +30,9 @@ int main() {
   string line;
   getline(cin, line);
   DoubleList<DoubleNode<string>, string> * results = new DoubleList<DoubleNode<string>, string>();
-  Tokenizer * tokenizer = new Tokenizer(), * tokenizer_visited = new Tokenizer();
+  Tokenizer * tokenizer = new Tokenizer();
   // tokenizer
-  CstringWrapper * str = new CstringWrapper(), * str_visited = new CstringWrapper(), * str_adapter = new CstringWrapper();
+  CstringWrapper * str = new CstringWrapper(), * str_adapter = new CstringWrapper();
   // str for c strings
   TokenizerList<
     string,
@@ -39,16 +44,24 @@ int main() {
     CstringWrapper,
     DoubleList<DoubleNode<string>, string>,
     Tokenizer
-  >(str, tokenizer),
-  * tokenizer_list_visited = new TokenizerList<
-    string,
-    CstringWrapper,
-    DoubleList<DoubleNode<string>, string>,
-    Tokenizer
-  >(str_visited, tokenizer_visited);
+  >(str, tokenizer);
   // tokenizer to work with list or something else
-  UnqliteWrapper<string> * table_base = new UnqliteWrapper<string>(), * table_base_visited = new UnqliteWrapper<string>();
+  UnqliteWrapper<string> * table_base = new UnqliteWrapper<string>();
   // table for storing things
+  DoubleListWalk<
+    DoubleNode<string>, 
+    DoubleList<DoubleNode<string>, string>
+  > * table_visited_walk = new DoubleListWalk<
+    DoubleNode<string>, 
+    DoubleList<DoubleNode<string>, string>
+  >();
+  // get walks
+  HashDjb2String<
+    string
+  > * hash_table_visited = new HashDjb2String<
+    string
+  >();
+  // get hashes
   HelperWrapper<
     string,
     DoubleList<DoubleNode<string>, string>,
@@ -71,20 +84,22 @@ int main() {
       Tokenizer
     >,
     UnqliteWrapper<string>
-  >(tokenizer, tokenizer_list, table_base),
-  * table_visited = new HelperWrapper<
-    string,
-    DoubleList<DoubleNode<string>, string>,
-    Tokenizer,
-    TokenizerList<
-      string,
-      CstringWrapper,
-      DoubleList<DoubleNode<string>, string>,
-      Tokenizer
-    >,
-    UnqliteWrapper<string>
-  >(tokenizer_visited, tokenizer_list_visited, table_base_visited);
-  // table store
+  >(tokenizer, tokenizer_list, table_base);
+  // wrapped table
+  ChainedHashTable<
+    DoubleNode<string>, 
+    DoubleList<DoubleNode<string>, string>, 
+    HashDjb2String<string>,
+    DoubleListWalk<DoubleNode<string>, DoubleList<DoubleNode<string>, string> >,
+    string
+  > * table_visited = new ChainedHashTable<
+    DoubleNode<string>, 
+    DoubleList<DoubleNode<string>, string>, 
+    HashDjb2String<string>,
+    DoubleListWalk<DoubleNode<string>, DoubleList<DoubleNode<string>, string> >,
+    string
+  >(ceil(SIZE / sizeof(DoubleNode<string>)), table_visited_walk, hash_table_visited);
+  // table to keep visited nodes
   GeneratorFile<
     ifstream, string
   > * files = new GeneratorFile<
@@ -156,6 +171,13 @@ int main() {
         Tokenizer
       >,
       UnqliteWrapper<string>
+    >,
+    ChainedHashTable<
+      DoubleNode<string>, 
+      DoubleList<DoubleNode<string>, string>, 
+      HashDjb2String<string>,
+      DoubleListWalk<DoubleNode<string>, DoubleList<DoubleNode<string>, string> >,
+      string
     >
     // table 
   > * adapter = new AdapterMetricsTable<
@@ -183,6 +205,13 @@ int main() {
         Tokenizer
       >,
       UnqliteWrapper<string>
+    >,
+    ChainedHashTable<
+      DoubleNode<string>, 
+      DoubleList<DoubleNode<string>, string>, 
+      HashDjb2String<string>,
+      DoubleListWalk<DoubleNode<string>, DoubleList<DoubleNode<string>, string> >,
+      string
     >
     // table
   >(str_adapter, table, table_visited, results);
@@ -215,8 +244,16 @@ int main() {
           Tokenizer
         >,
         UnqliteWrapper<string>
+      >,
+      // table
+      ChainedHashTable<
+        DoubleNode<string>, 
+        DoubleList<DoubleNode<string>, string>, 
+        HashDjb2String<string>,
+        DoubleListWalk<DoubleNode<string>, DoubleList<DoubleNode<string>, string> >,
+        string
       >
-      // table 
+      // table for visited nodes 
     >
     // adapter for index (table here)
   > * metrics = new MetricsTable<
@@ -246,8 +283,16 @@ int main() {
           Tokenizer
         >,
         UnqliteWrapper<string>
+      >,
+      // table
+      ChainedHashTable<
+        DoubleNode<string>, 
+        DoubleList<DoubleNode<string>, string>, 
+        HashDjb2String<string>,
+        DoubleListWalk<DoubleNode<string>, DoubleList<DoubleNode<string>, string> >,
+        string
       >
-      // table 
+      // table for visited nodes 
     >
     // adapter for index (table here)
   >(adapter);
@@ -271,15 +316,13 @@ int main() {
   cout<<"bfs time "<<difftime(then, now)<<" seconds"<<endl;
   delete results;
   delete tokenizer;
-  delete tokenizer_visited;
   delete str;
-  delete str_visited;
   delete str_adapter;
   delete tokenizer_list;
-  delete tokenizer_list_visited;
   delete table_base;
-  delete table_base_visited;
   delete table;
+  delete table_visited_walk;
+  delete hash_table_visited;
   delete table_visited;
   delete files;
   delete file_read;
