@@ -13,6 +13,10 @@ public:
   void find(Type key, char * result) {find(key, result, db);}
   void remove(Type key) {remove(key, db);}
   int value_size(Type key) {return value_size(key, db);}
+  unsigned int get_longest_chain() {
+    // todo something meaningful here
+    return 0;
+  }
 private:
   unqlite * db;
   void open(unqlite * & db) {unqlite_open(&db, ":mem:", UNQLITE_OPEN_CREATE);}
