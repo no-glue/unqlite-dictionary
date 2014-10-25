@@ -38,7 +38,7 @@ private:
     size_t size;
     int status;
     status = unqlite_kv_fetch(db, key.c_str(), -1, NULL, &size);
-    longest_chain = size;
+    if(size > longest_chain) longest_chain = size;
     if(status != UNQLITE_OK) return;
     status = unqlite_kv_fetch(db, key.c_str(), -1, result, &size);
   }
