@@ -21,7 +21,7 @@ private:
     int buffer_size = wrapper->value_size(key);
     char * buffer = new char[buffer_size];
     wrapper->find(key, buffer);
-    tokenizer->set_buffer(buffer, buffer_size);
+    tokenizer->set_buffer(buffer);
     tokenizer_helper->tokens(key, result);
     delete buffer;
   }
