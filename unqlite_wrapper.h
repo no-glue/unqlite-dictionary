@@ -19,7 +19,17 @@ private:
   unsigned int longest_chain;
   void open(unqlite * & db) {unqlite_open(&db, ":mem:", UNQLITE_OPEN_CREATE);}
   void close(unqlite * & db) {unqlite_close(db);}
-  void insert(Type key, Type value, unqlite * & db) {unqlite_kv_append(db, key.c_str(), -1, (value + "|").c_str(), (value + "|").length());}
+  void insert(Type key, Type value, unqlite * & db) {
+    // insert key and value to database
+    if(!exists(key, db))
+      // key and value do not exist
+      // just add key and value
+      unqlite_kv_append(db, key.c_str(), -1, value.c_str(), value.length());
+    else
+      // key exists
+      // chain value
+      unqlite_kv_append(db, key.c_str(), -1, ("|" + value).c_str(), ("|" + value).length());
+  }
   bool insert_unique(Type key, Type value, unqlite * & db) {
     // insert unique key
     bool there = exists(key);

@@ -15,7 +15,5 @@ private:
       list->insert_right(key, __token);
       wrapper->clear(__token, TOKEN_SIZE);
     }
-    list->insert_right(key, __token);
-    wrapper->clear(__token, TOKEN_SIZE);
   }
 };

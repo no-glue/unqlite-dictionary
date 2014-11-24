@@ -53,20 +53,18 @@ int main() {
   table->insert(key, "dd");
   table->insert(key, "ee");
 
-  result_size = table->value_size(key);
+  result_size = table->value_size(key) + 1;
   
   result = new char[result_size];
   table->find(key, result);
   cout<<"result size: "<<result_size<<endl;
   cout<<key<<" "<<result<<endl;
 
-  tokenizer->set_buffer(result, result_size);
+  tokenizer->set_buffer(result);
   while(tokenizer->token(tok)) {
     cout<<"token "<<tok<<endl;
     memset(tok, '\0', SAMPLE_SIZE);
   }
-  cout<<"token "<<tok<<endl;
-  memset(tok, '\0', SAMPLE_SIZE);
 
   tokenizer->rewind();
   tokenizer_list->tokens(key, list);
