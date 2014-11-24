@@ -53,7 +53,7 @@ int main() {
   table->insert(key, "dd");
   table->insert(key, "ee");
 
-  result_size = table->value_size(key) + 1;
+  result_size = table->value_size(key);
   
   result = new char[result_size];
   table->find(key, result);
